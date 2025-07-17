@@ -4,7 +4,7 @@
 
 An MCP (Model Context Protocol) server is a specialized server designed to manage, interpret, and serve contextual data for applications that rely on dynamic, context-aware interactions. It acts as a central hub that processes requests, maintains state, and provides relevant information or actions based on the current context of users or systems. By leveraging protocols and structured data, an MCP server enables more intelligent, adaptive, and responsive application behavior.
 
-In this lab we'll be going through the process of setting up a server which GitHub Copilot will interact with to get information from NASA APIs. We'll be utilising the TypeScript MCP SDK and the Node environment to get up and running fast - however - you can find a list of SDK's for server development [here](https://github.com/modelcontextprotocol/servers?tab=readme-ov-file#model-context-protocol-servers).
+In this lab, we'll be going through the process of setting up a server that GitHub Copilot will interact with to get information from NASA APIs. We'll be utilizing the TypeScript MCP SDK and the Node environment to get up and running fast. However, you can find a list of SDKs for server development [here](https://github.com/modelcontextprotocol/servers?tab=readme-ov-file#model-context-protocol-servers).
 
 ## Requirements:
 
@@ -14,9 +14,9 @@ In this lab we'll be going through the process of setting up a server which GitH
 
 ## Instructions
 
-1. Navigate to the SRC project and run `npm install` to set up the environment. The Node package.json has [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk), typescript and @types/node associated.
+1. Navigate to the src folder and run `npm install` to set up the environment. The Node package.json has [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk), typescript and @types/node associated.
 
-2. Navigate to the index.ts file. This is the basis of the MCP server - it's including the packages to utilize Prompts, Tools and Resources, the transport method for connecting the server to a client and providing a name.
+2. Navigate to the index.ts file. This is the basis of the MCP server - it includes the packages to utilize Prompts, Tools and Resources, the transport method for connecting the server to a client, and provides a name.
 
    Try to use Copilot to create a tool by having the agent use the following command:
 
@@ -28,13 +28,13 @@ In this lab we'll be going through the process of setting up a server which GitH
 
    This will let your Copilot agent read the Typescript SDK documentation and learn how to add a Tool to your MCP Server to get you started.
 
-3. Now that we've added a tool - let's test it out. First run `npm run build`, then run the below code to launch the [MCP Inspector tool](https://modelcontextprotocol.io/docs/tools/inspector). Using the Inspector Tool you can test Tools, Prompts and Resources to make sure they function before integrating them with a client.
+3. Now that we've added a tool, let's test it out. First run `npm run build`, then run the code below to launch the [MCP Inspector tool](https://modelcontextprotocol.io/docs/tools/inspector). Using the Inspector Tool, you can test Tools, Prompts and Resources to make sure they function before integrating them with a client.
 
 ```
 npx @modelcontextprotocol/inspector node index.js
 ```
 
-4. One of the reasons we use and define MCP servers is to engage external systems. In this tutorial we'll show you how to set up the server to call the APOD NASA API. Add the following line of code underneath the import statements. If you decided to get your own NASA APIKey, you can add this to a `.env` file.
+4. One of the reasons we use and define MCP servers is to engage with external systems. In this tutorial, we'll show you how to set up the server to call the APOD NASA API. Add the following line of code underneath the import statements. If you decided to get your own NASA API Key, you can add this to a `.env` file.
 
 ```
 // Securely get NASA API key from environment variable
@@ -44,12 +44,12 @@ const NASA_API_KEY = process.env.NASA_API_KEY || "DEMO_KEY";
 5. Now to add the functionality for the tool. There are 2 ways to do this:
 
 <details>
-<summary> 1. Writing the tool manually while checking the Typescript SDK documentation and NASA APOD API.</summary>
+<summary> 1. Writing the tool manually while checking the TypeScript SDK documentation and NASA APOD API.</summary>
 
-- [Documentation for Typescript SDK](https://github.com/modelcontextprotocol/typescript-sdk?tab=readme-ov-file#tools)
+- [Documentation for TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk?tab=readme-ov-file#tools)
 - [Documentation for NASA APIs](https://api.nasa.gov)
 
-1. The APOD API has several optional parameters and the required APIKey (you can choose to use the demo key we've already set up.). Start by setting up the 'front end' part of the tool, which defines the title, description and input schema:
+1. The APOD API has several optional parameters and the required API Key (you can choose to use the demo key we've already set up). Start by setting up the 'front end' part of the tool, which defines the title, description and input schema:
 
 ```typescript
 // NASA APOD (Astronomy Picture of the Day) Tool
@@ -60,18 +60,18 @@ server.registerTool( // Register the NASA APOD tool
     description:
       "Get NASA's Astronomy Picture of the Day (APOD) with optional parameters for specific dates, HD images, and more", // Description for the tool - this shows up on the MCP Inspector
     inputSchema: {
-      date: z // Zod is a Typescript library and rules. 'date' here is the name of the input value.
+      date: z // Zod is a TypeScript library and validation rules. 'date' here is the name of the input value.
         .string() // Type of data expected
-        .optional() // Telling us it's optional.
+        .optional() // Telling us it's optional
         .describe(
           "Date of image to retrieve (YYYY-MM-DD format). Defaults to today's date. Cannot be before 1995-06-16."
-        ) // Giving us an example of what to input. Please note that bc NASA is an American government agency, it's in US time.
+        ) // Giving us an example of what to input. Please note that because NASA is an American government agency, it's in US time.
     },
   },
 
 ```
 
-2. The next part of setting up a tool is to actually define the functionality behind the tool. The APOD API is a simple GET API and can be called with `fetch()` - so we're going to set up a simple async function. Let's also throw in some error handling.
+2. The next part of setting up a tool is to actually define the functionality behind the tool. The APOD API is a simple GET API and can be called with `fetch()`, so we're going to set up a simple async function. Let's also add some error handling.
 
 ```typescript
 async ({ date }) => {
@@ -96,7 +96,7 @@ async ({ date }) => {
 
       const data = await response.text(); // Get the response text
       return {
-        content: [ // Specify Content returned.
+        content: [ // Specify content returned
           {
             type: "text",
             text: data,
@@ -107,7 +107,7 @@ async ({ date }) => {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
       return {
-        content: [ // Specify Content returned for error.
+        content: [ // Specify content returned for error
           {
             type: "text",
             text: errorMessage,
@@ -147,10 +147,10 @@ npm run build && npx @modelcontextprotocol/inspector node index.js
 1. Add the following prompt to Copilot Chat in Agent mode:
 
 ```
-Add a tool to call the APOD API from NASA here: #fetch https://api.nasa.gov AND leverage the Typescript SDK: #fetch https://github.com/modelcontextprotocol/typescript-sdk?tab=readme-ov-file#tools
+Add a tool to call the APOD API from NASA here: #fetch https://api.nasa.gov AND leverage the TypeScript SDK: #fetch https://github.com/modelcontextprotocol/typescript-sdk?tab=readme-ov-file#tools
 ```
 
-This prompt will tell Copilot to retrieve the documentation for the API and for the Typescript SDK, which will provide guidance on setting up the tool and package correctly.
+This prompt will tell Copilot to retrieve the documentation for the API and for the TypeScript SDK, which will provide guidance on setting up the tool and package correctly.
 
 2. Review the code generated and test in the MCP inspector by running the following command:
 
@@ -161,9 +161,28 @@ npm run build && npx @modelcontextprotocol/inspector node index.js
 </details>
 <br>
 
-## Next Steps! 
+6. Now to set up the server so that Copilot can call it. Go to the command palette and select `MCP: Add Server`. Then select `Command (stdio)` for manual installation.
+
+![MCP Add Server](assets/MCP.List.png)
+![Command (stdio)](assets/MCP.Command.png)
+
+7. Add the line below - `node` is for the command (as this is a Node project) and then `src/build/index.js` is the filepath for the built server.
+
+```
+node src/build/index.js
+```
+
+8. Then enter a meaningful name - like `demo-server` and hit enter. Then choose the option 'Workspace Settings'. This means we'll only be able to access this tool within the current workspace.
+
+9. Finally, check to see if your server is running. Go to the Command Palette and run command `MCP: List Servers` and you should see your `demo-server` either running or stopped. You can then select that server to start it (and stop it later).
+
+![MCP List](assets/MCP.List.png)
+
+Now test it out by asking Copilot to retrieve an image from a certain date!
+
+## Next Steps
 
 There are a few different directions to go from here:
 * Try adding a Prompt and/or Resource
-* Update the tool to actually display the Image based on the returned URL from the APOD API.
-* Add additional external resources.
+* Update the tool to actually display the image based on the returned URL from the APOD API
+* Add additional external resources
