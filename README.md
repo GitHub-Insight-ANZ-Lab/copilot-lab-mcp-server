@@ -50,3 +50,4 @@ Resource | Description
 [Model Context Protocol Documentation](https://modelcontextprotocol.io/introduction) | User guide explaining Model Context Protocol.
 [Github Official MCP Server](https://github.com/github/github-mcp-server) | GitHub Official MCP Server Repository
 [Managing Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) | GitHub Documentation for setting up Personal Access Tokens.
+[Typescript MCP SKD](https://github.com/modelcontextprotocol/typescript-sdk) | Typescript SDK used for creating MCP servers.
