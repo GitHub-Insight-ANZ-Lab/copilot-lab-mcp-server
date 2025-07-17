@@ -4,7 +4,7 @@
 
 An MCP (Model Context Protocol) server is a specialized server designed to manage, interpret, and serve contextual data for applications that rely on dynamic, context-aware interactions. It acts as a central hub that processes requests, maintains state, and provides relevant information or actions based on the current context of users or systems. By leveraging protocols and structured data, an MCP server enables more intelligent, adaptive, and responsive application behavior.
 
-In this lab - we'll be going through the process of setting up a Server which Copilot will interact with to get information from NASA APIs. We'll be utilising the Typescript MCP SDK and the Node environment to get up and running fast - however - you can find a list of SDK's for Server development [here](https://github.com/modelcontextprotocol/servers?tab=readme-ov-file#model-context-protocol-servers).
+In this lab we'll be going through the process of setting up a server which GitHub Copilot will interact with to get information from NASA APIs. We'll be utilising the TypeScript MCP SDK and the Node environment to get up and running fast - however - you can find a list of SDK's for server development [here](https://github.com/modelcontextprotocol/servers?tab=readme-ov-file#model-context-protocol-servers).
 
 ## Requirements:
 
@@ -14,7 +14,7 @@ In this lab - we'll be going through the process of setting up a Server which Co
 
 ## Instructions
 
-1. Navigate to the src folder and run `npm install` to set up the environment. The Node package.json has [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk), typescript and @types/node associated.
+1. Navigate to the SRC project and run `npm install` to set up the environment. The Node package.json has [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk), typescript and @types/node associated.
 
 2. Navigate to the index.ts file. This is the basis of the MCP server - it's including the packages to utilize Prompts, Tools and Resources, the transport method for connecting the server to a client and providing a name.
 
