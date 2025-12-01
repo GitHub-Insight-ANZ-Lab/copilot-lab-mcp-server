@@ -6,21 +6,9 @@
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { spawn } from "child_process";
 
 async function testServer() {
   console.log("🚀 Starting MCP Test Client\n");
-
-  // Start the server process
-  const serverProcess = spawn("node", ["build/index.js"], {
-    stdio: ["pipe", "pipe", "inherit"],
-  });
-
-  // Create the transport using the server's stdio
-  const transport = new StdioClientTransport({
-    command: "node",
-    args: ["build/index.js"],
-  });
 
   // Create the client
   const client = new Client(
@@ -34,6 +22,12 @@ async function testServer() {
   );
 
   try {
+    // Create the transport using the server's stdio
+    const transport = new StdioClientTransport({
+      command: "node",
+      args: ["build/index.js"],
+    });
+
     // Connect to the server
     console.log("📡 Connecting to server...");
     await client.connect(transport);
@@ -56,10 +50,12 @@ async function testServer() {
     console.log("✅ All tests completed successfully!");
   } catch (error) {
     console.error("❌ Error:", error);
+    if (error instanceof Error && error.message.includes("ENOENT")) {
+      console.error("\n💡 Tip: Make sure you've built the server first by running 'npm run build'");
+    }
   } finally {
     // Clean up
     await client.close();
-    serverProcess.kill();
     console.log("\n👋 Test client closed");
   }
 }
