@@ -223,7 +223,11 @@ If you want to remove your custom MCP server from your workspace:
    - Delete the `.vscode/mcp.json` file from your workspace, OR
    - Remove your server entry from the `mcp.json` file if you want to keep other MCP servers configured
 
-3. **Verify Removal**:
+3. **Clear Copilot Chat**:
+   - `/clear` the chat window of any trace of the tools that may have been called by the MCP server
+   - Restart VS Code
+
+4. **Verify Removal**:
    - Open the Command Palette and run `MCP: List Servers` again
    - Your server should no longer appear in the list (or should show as not configured)
    - Test by asking Copilot about NASA pictures - it should no longer have access through your custom server
