@@ -19,9 +19,11 @@ In the Model Context Protocol (MCP) ecosystem, there are three key components th
 - Handles user interactions and coordinates requests/responses
 
 **👤 Clients**
-- The bridge between the host application and MCP servers
-- Translates requests from the host into MCP protocol messages
-- Manages the communication channel (like stdio, HTTP, or WebSocket)
+- Protocol clients that exist within or are used by the host application
+- Act as the bridge between the host and MCP servers
+- Maintain a 1:1 connection with each MCP server
+- Translate requests from the host into MCP protocol messages
+- Manage the communication channel (like stdio, HTTP, or WebSocket)
 - Examples: Built-in MCP clients in applications like Claude Desktop or VS Code
 
 **🔧 Servers**
@@ -32,7 +34,7 @@ In the Model Context Protocol (MCP) ecosystem, there are three key components th
 ## Prerequisites
 
 1. Copilot License Enabled
-1. [Visual Studio Code](https://www.google.com/search?client=safari&rls=en&q=Get+started+with+Visual+Studio+Code&ie=UTF-8&oe=UTF-8)
+1. IDE that supports Copilot OR Codespace access.
 
 ## Labs
 
@@ -50,4 +52,5 @@ Resource | Description
 [Model Context Protocol Documentation](https://modelcontextprotocol.io/introduction) | User guide explaining Model Context Protocol.
 [Github Official MCP Server](https://github.com/github/github-mcp-server) | GitHub Official MCP Server Repository
 [Managing Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) | GitHub Documentation for setting up Personal Access Tokens.
-[Typescript MCP SKD](https://github.com/modelcontextprotocol/typescript-sdk) | Typescript SDK used for creating MCP servers.
+[Typescript MCP Doco](https://github.com/modelcontextprotocol/typescript-sdk) | Typescript SDK documentation used for creating MCP servers.
+[List of SDKs](https://modelcontextprotocol.io/docs/sdk) | Other SDKs that can be used for MCP development.
