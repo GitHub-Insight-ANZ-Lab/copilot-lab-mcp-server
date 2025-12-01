@@ -11,6 +11,7 @@ While we're using TypeScript in this tutorial, you can find SDKs for other langu
 Select the instructions for your development environment:
 - [VS Code Instructions](#vs-code-instructions)
 - [GitHub Codespaces Instructions](#github-codespaces-instructions)
+- [IntelliJ Instructions](#intellij-instructions)
 
 ---
 
@@ -255,13 +256,13 @@ If you want to remove your custom MCP server from your workspace:
 
    This prompts Copilot to read the TypeScript SDK documentation and add a tool to your MCP server.
 
-3. **Test your tool using the test client**: Navigate to `src/test-client.ts' and use Copilot Agent mode to do the following:
+3. **Test your tool using the test client**: Navigate to `src/test-client.ts` and use Copilot Agent mode to do the following:
 
   ```
   Generate the client tests for the new tool
   ```
 
-once Copilot completes the action, review the test and run `npm test` to validate the tests.
+Once Copilot completes the action, review the test and run `npm test` to validate the tests.
 
 4. **Add external API integration**: Now we'll configure the server to call NASA's APOD (Astronomy Picture of the Day) API. Add this code below the import statements:
 
@@ -436,10 +437,216 @@ If you want to remove your custom MCP server from your workspace:
    - Your server should no longer appear in the list (or should show as not configured)
    - Test by asking Copilot about NASA pictures - it should no longer have access through your custom server
 
+---
+
+## IntelliJ Instructions
+
+### Requirements
+
+- [Node.js](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs) installed
+- TypeScript (optional - included in the project dependencies)
+- [NASA API Key](https://api.nasa.gov) (optional - you can use the demo key, but with reduced call limits)
+
+### Setup Instructions
+
+1. **Set up the project**: Navigate to the `src` folder and run `npm install` to install dependencies. The `package.json` includes the [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk), TypeScript, and @types/node.
+
+2. **Create your first tool**: Open the `index.ts` file. This is the foundation of your MCP server - it includes the SDK packages for Prompts, Tools, and Resources, the transport method for client connections, and basic server configuration.
+
+   Add a simple greeting tool by adding this code after the server creation:
+
+   ```typescript
+   // Friendly Greeting Tool
+   server.registerTool(
+     "friendly-greeting",
+     {
+       title: "Friendly Greeting",
+       description: "Provides a friendly greeting with an optional name",
+       inputSchema: {
+         name: z.string().optional().describe("Name of the person to greet")
+       }
+     },
+     async ({ name }) => {
+       const greeting = name 
+         ? `Hello, ${name}! Welcome to the MCP server!` 
+         : "Hello! Welcome to the MCP server!";
+       
+       return {
+         content: [
+           {
+             type: "text",
+             text: greeting
+           }
+         ]
+       };
+     }
+   );
+   ```
+
+   This creates a tool that accepts an optional name parameter and returns a friendly greeting message.
+
+3. **Test your tool**: Now that you've added a tool, test it using the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector). First build the project, then launch the inspector:
+
+   ```bash
+   npm run build
+   npx @modelcontextprotocol/inspector node build/index.js
+   ```
+
+   The Inspector will launch in a browser - from here select Connect, look at the list of tools for the one generated and then test it out.
+
+4. **Add external API integration**: Now we'll configure the server to call NASA's APOD (Astronomy Picture of the Day) API. Add this code below the import statements:
+
+   ```typescript
+   // Securely get NASA API key from environment variable
+   const NASA_API_KEY = process.env.NASA_API_KEY || "DEMO_KEY";
+   ```
+
+   > **Note**: If you have your own NASA API Key, you can store it in a `.env` file for better security.
+
+5. **Implement the NASA APOD tool**: Follow the steps below to manually add the NASA APOD tool to your server.
+
+   **Reference Documentation:**
+   - [TypeScript SDK Tools](https://github.com/modelcontextprotocol/typescript-sdk?tab=readme-ov-file#tools)
+   - [NASA APIs](https://api.nasa.gov)
+
+   a. **Add the NASA APOD tool**: The APOD API accepts optional parameters and requires an API key. Add the complete tool definition with the schema and implementation logic:
+
+   ```typescript
+   // NASA APOD (Astronomy Picture of the Day) Tool
+   server.registerTool(
+     "nasa-apod",
+     {
+       title: "NASA APOD",
+       description:
+         "Get NASA's Astronomy Picture of the Day (APOD) with optional parameters for specific dates, HD images, and more",
+       inputSchema: {
+         date: z
+           .string()
+           .optional()
+           .describe(
+             "Date of image to retrieve (YYYY-MM-DD format). Defaults to today's date. Cannot be before 1995-06-16."
+           )
+       },
+     },
+     async ({ date }) => {
+       try {
+         // Build the API URL
+         const apiUrl = new URL("https://api.nasa.gov/planetary/apod");
+         apiUrl.searchParams.set("api_key", NASA_API_KEY);
+
+         // Add parameters if provided
+         if (date) apiUrl.searchParams.set("date", date);
+
+         // Make the API request
+         const response = await fetch(apiUrl.toString());
+
+         if (!response.ok) {
+           throw new Error(
+             `NASA API error: ${response.status} ${response.statusText}`
+           );
+         }
+
+         const data = await response.text();
+         return {
+           content: [
+             {
+               type: "text",
+               text: data,
+             },
+           ],
+         };
+       } catch (error) {
+         const errorMessage =
+           error instanceof Error ? error.message : "Unknown error occurred";
+         return {
+           content: [
+             {
+               type: "text",
+               text: errorMessage,
+             },
+           ],
+           isError: true,
+         };
+     }
+   );
+   ```
+
+   b. **Test the tool**: Build and launch the inspector to verify your tool works:
+   ```bash
+   npm run build && npx @modelcontextprotocol/inspector node build/index.js
+   ```
+
+   c. **Expected response**: You should see a JSON response similar to this:
+   ```json
+   {
+     "date": "2025-07-16",
+     "explanation": "Would the Rosette Nebula by any other name look as sweet?...",
+     "hdurl": "https://apod.nasa.gov/apod/image/2507/Rosette_Decam_4000.jpg",
+     "media_type": "image",
+     "service_version": "v1",
+     "title": "The Rosette Nebula from DECam",
+     "url": "https://apod.nasa.gov/apod/image/2507/Rosette_Decam_960.jpg"
+   }
+   ```
+
+6. **Configure the server in IntelliJ**: Now that your server is working, let's update the GitHub Copilot MCP list to include the server:
+
+   a. **Go to MCP configuration**: Go to `Settings > Tools > GitHub Copilot > Model Context Protocol` and select the 'Configure' button under subsection Model Context Protocol (MCP). An `mcp.json` file should open.
+
+   ![Configure MCP Settings](assets/Copilot.Chat.IntelliJ.Configure.png)
+
+   b. **Update Configuration**: Update the file so that the nasa-apod server can be called. Replace `/absolute/path/to/your/project` with the full absolute path to your project directory.
+
+   ```json
+   {
+     "servers": {
+       "nasa-apod": {
+         "command": "node",
+         "args": [
+           "/absolute/path/to/your/project/src/build/index.js"
+         ]
+       }
+     }
+   }
+   ```
+
+   This configuration tells IntelliJ to run your MCP server using Node.js with the path to your compiled server file.
+
+   > **Note**: Make sure you've built your project (`npm run build`) before starting the server.
+
+7. **Restart IntelliJ**: IntelliJ will need to be restarted for the MCP configuration to take effect.
+
+8. **Start the Server**: Go to Copilot Chat and select the 'tool' icon. In the window that opens, search for 'nasa-apod' and start the server. Hit the 'Apply' button.
+
+![Agent Mode and Tools Icon](assets/Copilot.Chat.IntelliJ.AgentTool.png)
+
+![Start Server](assets/Copilot.Chat.IntelliJ.StartServer.png)
+
+9. **Test with Copilot**: Open Copilot Chat and ask it to retrieve an astronomy picture from a specific date! Try prompts like:
+   - "Get today's NASA astronomy picture"
+   - "Show me the NASA picture from July 16, 2025"
+
+### Clean Up
+
+If you want to remove your custom MCP server from your workspace:
+
+1. **Remove the Server Configuration**:
+   - Delete the `mcp.json` file from your project root, OR
+   - Remove the `demo-server` entry from the `mcp.json` file if you want to keep other MCP servers configured
+
+2. **Restart IntelliJ**: Restart IntelliJ IDEA to ensure the MCP server is no longer loaded.
+
+3. **Verify Removal**:
+   - Open Copilot Chat and test by asking about NASA pictures
+   - It should no longer have access through your custom server
+
+---
+
 ## Next Steps
 
 Now that you've built a custom MCP server, explore more possibilities:
 - Add prompts and resources to your server (see the [TypeScript SDK documentation](https://github.com/modelcontextprotocol/typescript-sdk))
+- Check out [MORE SDKs](https://modelcontextprotocol.io/docs/sdk#available-sdks) available for server development
 - Enhance the tool to display images directly using the returned URL
 - Integrate additional NASA APIs or other external services
 - Share your server with your team or publish it for others to use
